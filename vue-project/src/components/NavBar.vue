@@ -4,7 +4,7 @@
       <h3 class="navbar-brand">App Tareas</h3>
       <div>
         <RouterLink exact-active-class="activo" class="me-2" to="/">Home</RouterLink>
-        <RouterLink exact-active-class="activo" to="/tareas">Tareas</RouterLink>
+       
       </div>
     </div>
   </nav>

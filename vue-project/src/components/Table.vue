@@ -1,6 +1,6 @@
 <template>
   <div>
-     <button class="btn btn-primary mb-3" @click="$emit('crear')">Crear producto</button>
+    <router-link to="/productos/crear" class="btn btn-primary mb-3">Crear producto</router-link>
     <div v-if="loading">Cargando...</div>
     <div v-if="error">{{ error }}</div>
 
@@ -9,11 +9,12 @@
         <tr>
           <th scope="col">id</th>
           <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
           <th scope="col">Precio</th>
           <th scope="col">Stock</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
-
       <tbody>
         <tr v-for="producto in productos" :key="producto.id">
           <th scope="row">{{ producto.id }}</th>
@@ -21,9 +22,9 @@
           <td>{{ producto.description }}</td>
           <td>{{ producto.price }}</td>
           <td>{{ producto.stock }}</td>
-           <td>
-            <button class="btn btn-danger btn-sm me-2" @click="$emit('eliminar', producto.id)">Eliminar</button>
-            <button class="btn btn-warning btn-sm" @click="$emit('editar', producto)">Editar</button>
+          <td>
+            <button class="btn btn-danger btn-sm me-2" @click="eliminar(producto.id)">Eliminar</button>
+            <router-link :to="`/productos/editar/${producto.id}`" class="btn btn-warning btn-sm">Editar</router-link>
           </td>
         </tr>
       </tbody>
@@ -33,13 +34,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router"; 
 import { API, IProducto } from "../constantes";
 
 const productos = ref<IProducto[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
-const emits = defineEmits(["eliminar", "editar", "crear"]);
-
 
 async function cargarProductos() {
   loading.value = true;
@@ -55,14 +55,12 @@ async function cargarProductos() {
   }
 }
 
-onMounted(cargarProductos);
-
-// Permite recargar desde el padre
-defineExpose({ cargarProductos });
-</script>
-
-<style>
-.icono {
-  cursor: pointer;
+async function eliminar(id: number) {
+  if (confirm("¿Seguro que deseas eliminar este producto?")) {
+    await fetch(`${API}/Products/${id}`, { method: "DELETE" });
+    cargarProductos();
+  }
 }
-</style>
+
+onMounted(cargarProductos);
+</script> 
